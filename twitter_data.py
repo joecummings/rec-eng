@@ -135,7 +135,10 @@ def add_data(result):
     conn.commit()
 
 
-conn = psycopg2.connect(host="XXX", dbname="XXX", user="XXX")
+conn = psycopg2.connect(host="XXX",
+                        user="XXX",
+                        port="XXX",
+                        password="XXX")
 cur = conn.cursor()
 results = list()
 tweet_count = 0
@@ -143,7 +146,7 @@ url_count = 0
 
 stream = api.GetStreamSample()
 
-with ThreadPool(processes=50) as pool:
+with ThreadPool(processes=10) as pool:
     for tweet in stream:
         if "delete" in tweet:
             continue
