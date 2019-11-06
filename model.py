@@ -68,4 +68,3 @@ while True:
 print(f"Similarity is {similarity[index][0]}")
 print(urls[index])
 print(article.title)
-Image(url=article.top_image, width=300, height=200)
