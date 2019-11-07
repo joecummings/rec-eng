@@ -144,21 +144,26 @@ results = list()
 tweet_count = 0
 url_count = 0
 
-stream = api.GetStreamSample()
+stream = api.GetStreamFilter(track=['https'], languages=["en"])
 
 with ThreadPool(processes=10) as pool:
     for tweet in stream:
-        if "delete" in tweet:
-            continue
-        tweet_count += 1
-        screen_name = tweet["user"]["screen_name"]
-        created_at = tweet["created_at"]
-        urls = tweet["entities"]["urls"]
-        for url in urls:
-            expanded_url = url["expanded_url"]
-            pool.apply_async(
-                get_data, (expanded_url, screen_name, created_at), callback=add_data
-            )
-            if url_count % 250 == 0:
-                print(f"{url_count} ({tweet_count}): Found {len(results)} urls")
-            url_count += 1
+        if 'user' in tweet:
+            tweet_count += 1
+            screen_name = tweet['user']['screen_name']
+            created_at = tweet['created_at']
+            urls = tweet['entities']['urls']
+            for url in urls:
+                expanded_url = url['expanded_url']
+                pool.apply_async(get_data, (expanded_url, screen_name, created_at), callback=add_data)
+                if url_count % 250 == 0:
+                    print(f"Found {num_found}, "
+                          f"processed {tweet_count} tweets ({url_count} urls), "
+                          f"skipped {missed}")
+                url_count += 1
+
+        elif 'limit' in tweet:
+            missed = tweet['limit']['track']
+
+        else:
+            print(tweet)
