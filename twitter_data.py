@@ -135,35 +135,36 @@ def add_data(result):
     conn.commit()
 
 
-conn = psycopg2.connect(host="XXX",
-                        user="XXX",
-                        port="XXX",
-                        password="XXX")
+conn = psycopg2.connect(host="XXX", user="XXX", port="XXX", password="XXX")
 cur = conn.cursor()
 results = list()
 tweet_count = 0
 url_count = 0
 
-stream = api.GetStreamFilter(track=['https'], languages=["en"])
+stream = api.GetStreamFilter(track=["https"], languages=["en"])
 
 with ThreadPool(processes=10) as pool:
     for tweet in stream:
-        if 'user' in tweet:
+        if "user" in tweet:
             tweet_count += 1
-            screen_name = tweet['user']['screen_name']
-            created_at = tweet['created_at']
-            urls = tweet['entities']['urls']
+            screen_name = tweet["user"]["screen_name"]
+            created_at = tweet["created_at"]
+            urls = tweet["entities"]["urls"]
             for url in urls:
-                expanded_url = url['expanded_url']
-                pool.apply_async(get_data, (expanded_url, screen_name, created_at), callback=add_data)
+                expanded_url = url["expanded_url"]
+                pool.apply_async(
+                    get_data, (expanded_url, screen_name, created_at), callback=add_data
+                )
                 if url_count % 250 == 0:
-                    print(f"Found {num_found}, "
-                          f"processed {tweet_count} tweets ({url_count} urls), "
-                          f"skipped {missed}")
+                    print(
+                        f"Found {num_found}, "
+                        f"processed {tweet_count} tweets ({url_count} urls), "
+                        f"skipped {missed}"
+                    )
                 url_count += 1
 
-        elif 'limit' in tweet:
-            missed = tweet['limit']['track']
+        elif "limit" in tweet:
+            missed = tweet["limit"]["track"]
 
         else:
             print(tweet)
