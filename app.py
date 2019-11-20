@@ -6,31 +6,22 @@ from model import run_news_model
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/')
+
+@app.route("/")
 def index():
     return "Hello, World!"
 
-@app.route('/api/dummy_endpoint', methods=['GET'])
+
+@app.route("/api/dummy_endpoint", methods=["GET"])
 def get_dummy() -> list:
     return jsonify(
-        {
-            "title": "test1",
-            "url": "http://google.com",
-            "score": 0.5
-        },
-        {
-            "title": "test2",
-            "url": "http://google.com",
-            "score": 0.4
-        },
-        {
-            "title": "test3",
-            "url": "http://google.com",
-            "score": 0.2
-        }
+        {"title": "test1", "url": "http://google.com", "score": 0.5},
+        {"title": "test2", "url": "http://google.com", "score": 0.4},
+        {"title": "test3", "url": "http://google.com", "score": 0.2},
     )
 
-@app.route('/news/<string:handle>', methods=['GET'])
+
+@app.route("/news/<string:handle>", methods=["GET"])
 def get_news_recommendations(handle: str) -> list:
     try:
         articles = run_news_model(handle)
@@ -39,7 +30,8 @@ def get_news_recommendations(handle: str) -> list:
         print(e)
         return jsonify([])
 
-@app.route('/tv/<string:handle>', methods=['GET'])
+
+@app.route("/tv/<string:handle>", methods=["GET"])
 def get_tv_recommendations(handle: str) -> list:
     try:
         shows = run_tv_model(handle)
@@ -48,5 +40,6 @@ def get_tv_recommendations(handle: str) -> list:
         print(e)
         return jsonify([])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
